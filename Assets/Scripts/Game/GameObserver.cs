@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -16,7 +17,9 @@ namespace Checkers
         [SerializeField]
         private ObserverMode _mode = ObserverMode.Observe;
         [Inject]
-        private IGameObservable _gameController;
+        private IGameObservable _gameObservable;
+        [Inject]
+        private IGameController _gameController;
 
         private string _gameLogPath
         {
@@ -25,9 +28,9 @@ namespace Checkers
 
         private void Awake()
         {
-            _gameController.OnEatChip += OnEatChip;
-            _gameController.OnSelectChip += OnSelectChip;
-            _gameController.OnStep += OnStep;
+            _gameObservable.OnEatChip += OnEatChip;
+            _gameObservable.OnSelectChip += OnSelectChip;
+            _gameObservable.OnStep += OnStep;
 
             if (_mode == ObserverMode.Observe)
             {
@@ -36,7 +39,31 @@ namespace Checkers
             }
             else
             {
+                if (File.Exists(_gameLogPath))
+                {
+                    StopAllCoroutines();
+                    StartCoroutine(PlayGameFromFile());
+                }
+                else
+                {
+                    Debug.Log("File not found");
+                }
+            }
+        }
 
+        private IEnumerator PlayGameFromFile()
+        {
+            yield return new WaitForSeconds(1f);
+            foreach (string line in File.ReadAllLines(_gameLogPath))
+            {
+                var step = new OnStepArgs(line);
+                _gameController.MakeStep(
+                    step.From.Item1,
+                    step.From.Item2,
+                    step.To.Item1,
+                    step.To.Item2
+                );
+                yield return new WaitForSeconds(1.5f);
             }
         }
 

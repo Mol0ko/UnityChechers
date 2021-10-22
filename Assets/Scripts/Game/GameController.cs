@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Checkers
 {
-    public class GameController : MonoBehaviour, IGameObservable
+    public class GameController : MonoBehaviour, IGameController, IGameObservable
     {
 
         #region Serializable
@@ -27,7 +27,7 @@ namespace Checkers
         #endregion
 
         #region Events
-        
+
         public event OnStepEventHandler OnStep;
         public event OnEatChipEventHandler OnEatChip;
         public event OnSelectChipEventHandler OnSelectChip;
@@ -89,22 +89,8 @@ namespace Checkers
                 var canMakeStep = cellIsEmpty && isDiagonalStep && _focusedCell.GetColor == ColorType.Black && _selectedChip.GetColor == _turnSide;
                 if (canMakeStep)
                 {
-                    var eatenEnemy = EatenEnemyForStep(_selectedChipPosition.Item1, _selectedChipPosition.Item2, x, z);
-                    if (eatenEnemy != null)
-                    {
-                        var eatenChip = _chipsOnField[eatenEnemy.Item2].Chips[eatenEnemy.Item1];
-                        Destroy(eatenChip.gameObject);
 
-                        var onEatChipArgs = new CellCoordsEventArgs(eatenEnemy.Item1, eatenEnemy.Item2);
-                        OnEatChip?.Invoke(this, onEatChipArgs);
-
-                        _chipsOnField[eatenEnemy.Item2].Chips[eatenEnemy.Item1] = null;
-                        MakeStep(_selectedChipPosition.Item1, _selectedChipPosition.Item2, x, z);
-                    }
-                    else if (Math.Abs(x - _selectedChipPosition.Item1) == 1)
-                    {
-                        MakeStep(_selectedChipPosition.Item1, _selectedChipPosition.Item2, x, z);
-                    }
+                    MakeStep(_selectedChipPosition.Item1, _selectedChipPosition.Item2, x, z);
                     string winMessage;
                     if (CheckWin(out winMessage))
                         Debug.Log(winMessage);
@@ -158,13 +144,24 @@ namespace Checkers
             chip.AddAdditionalMaterial(_focusedMaterial);
         }
 
-        private void MakeStep(int xFrom, int zFrom, int xTo, int zTo)
+        public void MakeStep(int xFrom, int zFrom, int xTo, int zTo)
         {
             if (_selectedChip == null)
             {
-                Debug.LogError($"Chip not selected before making step");
-                return;
+                _selectedChip = _chipsOnField[zFrom].Chips[xFrom];
             }
+            var eatenEnemy = EatenEnemyForStep(xFrom, zFrom, xTo, zTo);
+            if (eatenEnemy != null)
+            {
+                var eatenChip = _chipsOnField[eatenEnemy.Item2].Chips[eatenEnemy.Item1];
+                Destroy(eatenChip.gameObject);
+
+                var onEatChipArgs = new CellCoordsEventArgs(eatenEnemy.Item1, eatenEnemy.Item2);
+                OnEatChip?.Invoke(this, onEatChipArgs);
+
+                _chipsOnField[eatenEnemy.Item2].Chips[eatenEnemy.Item1] = null;
+            }
+
             _chipsOnField[zTo].Chips[xTo] = _selectedChip;
             _chipsOnField[zFrom].Chips[xFrom] = null;
             _selectedChip.GetComponent<ChipStepMove>().MoveToPosition(xTo, -zTo);

@@ -10,7 +10,7 @@ namespace Checkers
 
         public override void InstallBindings()
         {
-            Container.Bind<IGameObservable>().To<GameController>().FromInstance(_gameController).AsSingle();
+            Container.Bind(typeof(IGameObservable), typeof(IGameController)).To<GameController>().FromInstance(_gameController).AsSingle();
         }
     }
 }

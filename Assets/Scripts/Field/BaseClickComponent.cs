@@ -47,9 +47,9 @@ namespace Checkers
         /// </summary>
         public void RemoveAdditionalMaterial(int index = 1)
         {
-            if (index < 1 || index > 2)
+            if (index < 1 || index > 2 || _meshMaterials.Count() >= index)
             {
-                Debug.LogError("Попытка удалить несуществующий материал. Индекс может быть равен только 1 или 2");
+                Debug.LogWarning("Попытка удалить несуществующий материал. Индекс может быть равен только 1 или 2");
                 return;
             }
             _meshMaterials[index] = null;
