@@ -13,13 +13,13 @@ namespace Checkers
         [SerializeField]
         private ObserverMode _mode = ObserverMode.Observe;
         [SerializeField]
-        private GameController _gameManager;
+        private GameController _gameController;
 
         private void Awake()
         {   
-            _gameManager.OnEatChip += OnEatChip;
-            _gameManager.OnSelectChip +=OnSelectChip;
-            _gameManager.OnStep += OnStep;
+            _gameController.OnEatChip += OnEatChip;
+            _gameController.OnSelectChip +=OnSelectChip;
+            _gameController.OnStep += OnStep;
         }
 
         private void OnStep(object sender, GameController.OnStepArgs args) {

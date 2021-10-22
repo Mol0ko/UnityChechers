@@ -8428,6 +8428,7 @@ MonoBehaviour:
   - {fileID: 1051128671}
   - {fileID: 179596840}
   _focusedMaterial: {fileID: 2100000, guid: aca6611ec3e0147108dc168e27bdf9b0, type: 2}
+  _camera: {fileID: 963194225}
 --- !u!4 &1696346324
 Transform:
   m_ObjectHideFlags: 0
@@ -9532,6 +9533,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71091749338e645cf811a6969ffae483, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mode: 0
+  _gameController: {fileID: 1696346323}
 --- !u!1 &1896381813
 GameObject:
   m_ObjectHideFlags: 0

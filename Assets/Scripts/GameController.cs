@@ -22,6 +22,7 @@ namespace Checkers
         [SerializeField]
         private Material _focusedMaterial;
         [SerializeField]
+        private GameObject _camera;
 
         #endregion
 
@@ -63,23 +64,9 @@ namespace Checkers
 
         #endregion
 
-        private GameObject _camera;
-
         private CellComponent _focusedCell;
         private ChipComponent _selectedChip;
-        private Tuple<int, int> _selectedChipPosition
-        {
-            get => _selectedChipPosition;
-            set
-            {
-                _selectedChipPosition = value;
-                if (value != null)
-                {
-                    var onSelectChipArgs = new CellCoordsEventArgs(value.Item1, value.Item2);
-                    OnSelectChip?.Invoke(this, onSelectChipArgs);
-                }
-            }
-        }
+        private Tuple<int, int> _selectedChipPosition;
         private ColorType _turnSide = ColorType.White;
 
         #region Lifecycle
@@ -122,6 +109,8 @@ namespace Checkers
             {
                 SelectChip(chip);
                 _selectedChipPosition = new Tuple<int, int>(x, z);
+                var onSelectChipArgs = new CellCoordsEventArgs(x, z);
+                OnSelectChip?.Invoke(this, onSelectChipArgs);
             }
             else if (_selectedChip != null)
             {
