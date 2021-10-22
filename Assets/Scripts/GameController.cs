@@ -44,21 +44,21 @@ namespace Checkers
         public delegate void OnStepEventHandler(object sender, OnStepArgs args);
         public event OnStepEventHandler OnStep;
 
-        public class FieldCellCoordsEventArgs : EventArgs
+        public class CellCoordsEventArgs : EventArgs
         {
             public readonly int x;
             public readonly int z;
 
-            public FieldCellCoordsEventArgs(int x, int z)
+            public CellCoordsEventArgs(int x, int z)
             {
                 this.x = x;
                 this.z = z;
             }
         }
 
-        public delegate void OnEatChipEventHandler(object sender, FieldCellCoordsEventArgs args);
+        public delegate void OnEatChipEventHandler(object sender, CellCoordsEventArgs args);
         public event OnEatChipEventHandler OnEatChip;
-        public delegate void OnSelectChipEventHandler(object sender, FieldCellCoordsEventArgs args);
+        public delegate void OnSelectChipEventHandler(object sender, CellCoordsEventArgs args);
         public event OnSelectChipEventHandler OnSelectChip;
 
         #endregion
@@ -75,7 +75,7 @@ namespace Checkers
                 _selectedChipPosition = value;
                 if (value != null)
                 {
-                    var onSelectChipArgs = new FieldCellCoordsEventArgs(value.Item1, value.Item2);
+                    var onSelectChipArgs = new CellCoordsEventArgs(value.Item1, value.Item2);
                     OnSelectChip?.Invoke(this, onSelectChipArgs);
                 }
             }
@@ -136,7 +136,7 @@ namespace Checkers
                         var eatenChip = _chipsOnField[eatenEnemy.Item2].Chips[eatenEnemy.Item1];
                         Destroy(eatenChip.gameObject);
 
-                        var onEatChipArgs = new FieldCellCoordsEventArgs(eatenEnemy.Item1, eatenEnemy.Item2);
+                        var onEatChipArgs = new CellCoordsEventArgs(eatenEnemy.Item1, eatenEnemy.Item2);
                         OnEatChip?.Invoke(this, onEatChipArgs);
 
                         _chipsOnField[eatenEnemy.Item2].Chips[eatenEnemy.Item1] = null;
