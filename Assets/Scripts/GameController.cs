@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Checkers
 {
@@ -23,6 +22,27 @@ namespace Checkers
         [SerializeField]
         private Material _focusedMaterial;
         [SerializeField]
+
+        #endregion
+
+        #region Notifications
+
+        public class OnStepArgs : EventArgs
+        {
+            public readonly ColorType Side;
+            public readonly Tuple<int, int> From;
+            public readonly Tuple<int, int> To;
+
+            public OnStepArgs(ColorType side, Tuple<int, int> from, Tuple<int, int> to)
+            {
+                Side = side;
+                From = from;
+                To = to;
+            }
+        }
+
+        public delegate void OnStepEventHandler(object sender, OnStepArgs args);
+        public event OnStepEventHandler OnStep;
 
         #endregion
 
@@ -160,6 +180,14 @@ namespace Checkers
             _selectedChip.RemoveAdditionalMaterial();
             _selectedChip = null;
             _selectedChipPosition = null;
+
+            var onStepArgs = new OnStepArgs(
+                _turnSide, 
+                new Tuple<int, int>(xFrom, zFrom), 
+                new Tuple<int, int>(xTo, zTo)
+            );
+            OnStep?.Invoke(this, onStepArgs);
+
             switch (_turnSide)
             {
                 case ColorType.White:
