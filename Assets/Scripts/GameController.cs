@@ -25,7 +25,7 @@ namespace Checkers
 
         #endregion
 
-        #region Notifications
+        #region Events
 
         public class OnStepArgs : EventArgs
         {
@@ -44,13 +44,42 @@ namespace Checkers
         public delegate void OnStepEventHandler(object sender, OnStepArgs args);
         public event OnStepEventHandler OnStep;
 
+        public class FieldCellCoordsEventArgs : EventArgs
+        {
+            public readonly int x;
+            public readonly int z;
+
+            public FieldCellCoordsEventArgs(int x, int z)
+            {
+                this.x = x;
+                this.z = z;
+            }
+        }
+
+        public delegate void OnEatChipEventHandler(object sender, FieldCellCoordsEventArgs args);
+        public event OnEatChipEventHandler OnEatChip;
+        public delegate void OnSelectChipEventHandler(object sender, FieldCellCoordsEventArgs args);
+        public event OnSelectChipEventHandler OnSelectChip;
+
         #endregion
 
         private GameObject _camera;
 
         private CellComponent _focusedCell;
         private ChipComponent _selectedChip;
-        private Tuple<int, int> _selectedChipPosition;
+        private Tuple<int, int> _selectedChipPosition
+        {
+            get => _selectedChipPosition;
+            set
+            {
+                _selectedChipPosition = value;
+                if (value != null)
+                {
+                    var onSelectChipArgs = new FieldCellCoordsEventArgs(value.Item1, value.Item2);
+                    OnSelectChip?.Invoke(this, onSelectChipArgs);
+                }
+            }
+        }
         private ColorType _turnSide = ColorType.White;
 
         #region Lifecycle
@@ -106,6 +135,10 @@ namespace Checkers
                     {
                         var eatenChip = _chipsOnField[eatenEnemy.Item2].Chips[eatenEnemy.Item1];
                         Destroy(eatenChip.gameObject);
+
+                        var onEatChipArgs = new FieldCellCoordsEventArgs(eatenEnemy.Item1, eatenEnemy.Item2);
+                        OnEatChip?.Invoke(this, onEatChipArgs);
+
                         _chipsOnField[eatenEnemy.Item2].Chips[eatenEnemy.Item1] = null;
                         MakeStep(_selectedChipPosition.Item1, _selectedChipPosition.Item2, x, z);
                     }
@@ -182,8 +215,8 @@ namespace Checkers
             _selectedChipPosition = null;
 
             var onStepArgs = new OnStepArgs(
-                _turnSide, 
-                new Tuple<int, int>(xFrom, zFrom), 
+                _turnSide,
+                new Tuple<int, int>(xFrom, zFrom),
                 new Tuple<int, int>(xTo, zTo)
             );
             OnStep?.Invoke(this, onStepArgs);
