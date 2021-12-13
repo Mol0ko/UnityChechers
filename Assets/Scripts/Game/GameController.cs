@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Checkers
@@ -31,6 +32,8 @@ namespace Checkers
         public event OnStepEventHandler OnStep;
         public event OnEatChipEventHandler OnEatChip;
         public event OnSelectChipEventHandler OnSelectChip;
+        public event Action OnStartGame;
+        public event Action OnExitGame;
 
         #endregion
 
@@ -48,12 +51,14 @@ namespace Checkers
                 cell.OnFocusEventHandler += OnFocusEventHandler;
                 cell.OnClickEventHandler += OnCellClickEventHandler;
             }
+            OnStartGame?.Invoke();
         }
 
         private void Update()
         {
             UpdateFocusedCell();
             UpdateChipSelection();
+            UpdateExitGame();
         }
 
         #endregion
@@ -141,6 +146,20 @@ namespace Checkers
 
             if (selectCellCondition)
                 _focusedCell?.OnPointerClick();
+        }
+
+
+        private void UpdateExitGame()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+#if UNITY_EDITOR
+                EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+                OnExitGame?.Invoke();
+            }
         }
 
         private void SelectChip(ChipComponent chip)

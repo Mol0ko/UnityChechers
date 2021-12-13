@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Zenject;
@@ -31,6 +31,8 @@ namespace Checkers
             _gameObservable.OnEatChip += OnEatChip;
             _gameObservable.OnSelectChip += OnSelectChip;
             _gameObservable.OnStep += OnStep;
+            _gameObservable.OnStartGame += OnStartGame;
+            _gameObservable.OnExitGame += OnExitGame;
 
             if (_mode == ObserverMode.Observe)
             {
@@ -56,14 +58,17 @@ namespace Checkers
             yield return new WaitForSeconds(1f);
             foreach (string line in File.ReadAllLines(_gameLogPath))
             {
-                var step = new OnStepArgs(line);
-                _gameController.MakeStep(
-                    step.From.Item1,
-                    step.From.Item2,
-                    step.To.Item1,
-                    step.To.Item2
-                );
-                yield return new WaitForSeconds(1.5f);
+                if (!line.StartsWith("["))
+                {
+                    var step = new OnStepArgs(line);
+                    _gameController.MakeStep(
+                        step.From.Item1,
+                        step.From.Item2,
+                        step.To.Item1,
+                        step.To.Item2
+                    );
+                    yield return new WaitForSeconds(1.5f);
+                }
             }
         }
 
@@ -84,6 +89,22 @@ namespace Checkers
         {
             Debug.Log("EatChip: " + args.x + ", " + args.z);
             string json = JsonUtility.ToJson(args);
+        }
+
+        private void OnStartGame()
+        {
+            var time = DateTime.Now.ToLongTimeString();
+            var logString = "[" + time + "] Start Game";
+            Debug.Log(logString);
+            AddToFile(logString);
+        }
+
+        private void OnExitGame()
+        {
+            var time = DateTime.Now.ToLongTimeString();
+            var logString = "[" + time + "] Exit Game";
+            Debug.Log(logString);
+            AddToFile(logString);
         }
 
         private void AddToFile(string content)
