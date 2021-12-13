@@ -131,7 +131,15 @@ namespace Checkers
 
         private void UpdateChipSelection()
         {
-            if (Input.GetMouseButtonDown(0))
+            var selectCellCondition = false;
+
+#if UNITY_EDITOR
+            selectCellCondition = Input.GetMouseButtonDown(0);
+#else
+            selectCellCondition = Input.GetMouseButtonDown(1);
+#endif
+
+            if (selectCellCondition)
                 _focusedCell?.OnPointerClick();
         }
 
