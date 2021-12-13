@@ -24,6 +24,8 @@ namespace Checkers
         private Material _focusedMaterial;
         [SerializeField]
         private CameraMove _cameraAxis;
+        [SerializeField]
+        private GameObject _escButton;
 
         #endregion
 
@@ -53,6 +55,12 @@ namespace Checkers
                 cell.OnClickEventHandler += OnCellClickEventHandler;
             }
             OnStartGame?.Invoke();
+
+#if UNITY_ANDROID || UNITY_IOS
+            _escButton.SetActive(true);
+#else
+            _escButton.SetActive(false);
+#endif
         }
 
         private void Update()
@@ -60,6 +68,16 @@ namespace Checkers
             UpdateFocusedCell();
             UpdateChipSelection();
             UpdateExitGame();
+        }
+
+        #endregion
+
+        #region Private methods
+
+        public void ExitApp()
+        {
+            OnExitGame?.Invoke();
+            Application.Quit();
         }
 
         #endregion
@@ -152,8 +170,10 @@ namespace Checkers
 
 #if UNITY_EDITOR
             selectCellCondition = Input.GetMouseButtonDown(0);
+#elif UNITY_ANDROID || UNITY_IOS
+            selectCellCondition = Input.GetTouch(0).phase == TouchPhase.Began;
 #else
-            selectCellCondition = Input.GetMouseButtonDown(1);
+            selectCellCondition = Input.GetMouseButtonDown(0);
 #endif
 
             if (selectCellCondition)
