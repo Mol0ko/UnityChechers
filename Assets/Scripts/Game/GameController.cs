@@ -22,7 +22,7 @@ namespace Checkers
         [SerializeField]
         private Material _focusedMaterial;
         [SerializeField]
-        private GameObject _camera;
+        private CameraMove _cameraAxis;
 
         #endregion
 
@@ -165,7 +165,7 @@ namespace Checkers
             _chipsOnField[zTo].Chips[xTo] = _selectedChip;
             _chipsOnField[zFrom].Chips[xFrom] = null;
             _selectedChip.GetComponent<ChipStepMove>().MoveToPosition(xTo, -zTo);
-            _camera.GetComponent<CameraMove>().MoveToAnotherSide();
+            _cameraAxis.MoveToAnotherSide();
             _selectedChip.RemoveAdditionalMaterial();
             _selectedChip = null;
             _selectedChipPosition = null;

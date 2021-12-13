@@ -11,13 +11,13 @@ public class CameraMove : MonoBehaviour
 
     private IEnumerator RotateAroundCenter()
     {
-        var fieldCenter = new Vector3(4, 0, -4);
-        var rotationTime = 1f;
-        while (rotationTime > 0)
+        var startRotation = transform.rotation;
+        var endRotation = Quaternion.Euler(new Vector3(0, 180, 0)) * startRotation;
+        for (float t = 0; t < 0.7f; t += Time.deltaTime)
         {
-            transform.RotateAround(fieldCenter, Vector3.up, 180 * Time.deltaTime);
-            rotationTime -= Time.deltaTime;
+            transform.rotation = Quaternion.Lerp(startRotation, endRotation, t / 0.7f);
             yield return null;
         }
+        transform.rotation = endRotation;
     }
 }
