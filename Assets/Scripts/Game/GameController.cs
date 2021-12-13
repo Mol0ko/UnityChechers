@@ -46,6 +46,7 @@ namespace Checkers
 
         private void Start()
         {
+            CheckLinks();
             foreach (var cell in _cells)
             {
                 cell.OnFocusEventHandler += OnFocusEventHandler;
@@ -64,6 +65,17 @@ namespace Checkers
         #endregion
 
         #region Private methods
+
+        private void CheckLinks()
+        {
+            if (_chipsOnField == null &&
+            _cells == null &&
+            _focusedMaterial == null &&
+            _cameraAxis == null)
+            {
+                Debug.Log("GameController has invalid links. Please check: _chipsOnField, _cells, _focusedMaterial, _cameraAxis");
+            }
+        }
 
         private void OnFocusEventHandler(CellComponent cell, bool focused)
         {
