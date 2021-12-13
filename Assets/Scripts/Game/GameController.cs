@@ -132,7 +132,7 @@ namespace Checkers
         private void UpdateChipSelection()
         {
             if (Input.GetMouseButtonDown(0))
-                _focusedCell.OnPointerClick();
+                _focusedCell?.OnPointerClick();
         }
 
         private void SelectChip(ChipComponent chip)

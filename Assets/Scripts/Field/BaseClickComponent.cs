@@ -10,7 +10,7 @@ namespace Checkers
         //Меш игрового объекта
         private MeshRenderer _mesh;
         //Список материалов на меше объекта
-        private Material[] _meshMaterials = new Material[3];
+        private Material[] _meshMaterials = new Material[2];
 
         [Tooltip("Цветовая сторона игрового объекта"), SerializeField]
         private ColorType _color;
@@ -47,7 +47,7 @@ namespace Checkers
         /// </summary>
         public void RemoveAdditionalMaterial(int index = 1)
         {
-            if (index < 1 || index > 2 || _meshMaterials.Count() >= index)
+            if (index < 1 || index > 2)
             {
                 Debug.LogWarning("Попытка удалить несуществующий материал. Индекс может быть равен только 1 или 2");
                 return;
